@@ -1,4 +1,6 @@
 #%%
+from typing import List
+
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -10,7 +12,7 @@ file_lsf = "lsf_flds.ifa"
 #%%
 
 
-def stacked_data(file):
+def stacked_data(file: str) -> List[pd.DataFrame]:
     ncols = pd.read_csv(
         file, delimiter=" ", skipinitialspace=True, skiprows=1, nrows=1, header=None
     )
@@ -34,7 +36,7 @@ def stacked_data(file):
 # %%
 
 
-def basic_to_dataset(dataframe):
+def basic_to_dataset(dataframe: pd.DataFrame) -> xr.Dataset:
     year, month, day, hour, *_ = dataframe.iloc[0].values
     dataframe = dataframe.replace(-999, np.nan)
     raw_data = dataframe.iloc[2:]
@@ -62,7 +64,7 @@ def basic_to_dataset(dataframe):
     return xdata
 
 
-def deriv_to_dataset(dataframe):
+def deriv_to_dataset(dataframe: pd.DataFrame) -> xr.Dataset:
     year, month, day, hour, *_ = dataframe.iloc[0].values
     dataframe = dataframe.replace(-999, np.nan)
     raw_data = dataframe.iloc[2:]
@@ -89,14 +91,13 @@ def deriv_to_dataset(dataframe):
             "time": pd.to_datetime(
                 f"{year+1900:.0f}-{month:02.0f}-{day:02.0f} {hour}:00"
             ),
-            # "nz": np.arange(raw_data[0].size),
             "pr": (["pr"], raw_data[0], dict(long_name="Pressure", units="hPa")),
         },
     )
     return xdata
 
 
-def lsf_to_dataset(dataframe):
+def lsf_to_dataset(dataframe: pd.DataFrame) -> xr.Dataset:
     year, month, day, hour, *_ = dataframe.iloc[0].values
     dataframe = dataframe.replace(-999, np.nan)
     raw_data = dataframe.iloc[2:]
@@ -146,7 +147,7 @@ deriv_dfs = stacked_data(file_deriv)
 lsf_dfs = stacked_data(file_lsf)
 
 xdata_basic = xr.concat([basic_to_dataset(x) for x in basic_dfs], dim="time")
-xdata_deriv = xr.concat([deriv_to_dataset(x) for x in basic_dfs], dim="time")
+xdata_deriv = xr.concat([deriv_to_dataset(x) for x in deriv_dfs], dim="time")
 xdata_lsf = xr.concat([lsf_to_dataset(x) for x in lsf_dfs], dim="time")
 # %%
 
