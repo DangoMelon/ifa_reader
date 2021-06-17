@@ -58,7 +58,7 @@ def to_dataarray(dataframe):
 # %%
 
 ds_container = [to_dataarray(x) for x in dfs]
-xdata = xr.concat(ds_container, dim="time", join="right")
+xdata = xr.concat(ds_container, dim="time")
 # %%
 
 # Save the data
