@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-file_basic = "basic_flds.ifa"
-file_deriv = "deriv_flds.ifa"
-file_lsf = "lsf_flds.ifa"
+file_basic = "ifa_data/basic_flds.ifa"
+file_deriv = "ifa_data/deriv_flds.ifa"
+file_lsf = "ifa_data/lsf_flds.ifa"
 
 #%%
 
@@ -152,8 +152,8 @@ xdata_lsf = xr.concat([lsf_to_dataset(x) for x in lsf_dfs], dim="time")
 # %%
 
 # Save the data
-xdata_basic.to_netcdf("basic_flds.nc")
-xdata_deriv.to_netcdf("deriv_flds.nc")
-xdata_lsf.to_netcdf("lsf_flds.nc")
+xdata_basic.to_netcdf("nc_data/basic_flds.nc")
+xdata_deriv.to_netcdf("nc_data/deriv_flds.nc")
+xdata_lsf.to_netcdf("nc_data/lsf_flds.nc")
 
 # %%
