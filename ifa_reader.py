@@ -3,26 +3,32 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-file = "basic_flds.ifa"
-
-ncols = pd.read_csv(
-    file, delimiter=" ", skipinitialspace=True, skiprows=1, nrows=1, header=None
-)
-ncols = ncols.size
+file_basic = "basic_flds.ifa"
+file_deriv = "deriv_flds.ifa"
 
 #%%
-df = pd.read_csv(
-    file,
-    delimiter="\s*[ ]\s*",
-    header=None,
-    engine="python",
-    index_col=False,
-    names=np.arange(ncols),
-)
 
-# %%
-splits = [ix for ix in df[df.isnull().any(axis=1)].index] + [len(df)]
-dfs = [df[splits[i] : splits[i + 1]] for i in range(len(splits) - 1)]
+
+def stacked_data(file):
+    ncols = pd.read_csv(
+        file, delimiter=" ", skipinitialspace=True, skiprows=1, nrows=1, header=None
+    )
+    ncols = ncols.size
+
+    df = pd.read_csv(
+        file,
+        delimiter="\s*[ ]\s*",
+        header=None,
+        engine="python",
+        index_col=False,
+        names=np.arange(ncols),
+    )
+
+    splits = [ix for ix in df[df.isnull().any(axis=1)].index] + [len(df)]
+    dfs = [df[splits[i] : splits[i + 1]] for i in range(len(splits) - 1)]
+
+    return dfs
+
 
 # %%
 
@@ -56,6 +62,8 @@ def to_dataarray(dataframe):
 
 
 # %%
+basic_dfs = stacked_data(file_basic)
+deriv_dfs = stacked_data(file_deriv)
 
 ds_container = [to_dataarray(x) for x in dfs]
 xdata = xr.concat(ds_container, dim="time")
