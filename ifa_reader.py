@@ -5,6 +5,7 @@ import xarray as xr
 
 file_basic = "basic_flds.ifa"
 file_deriv = "deriv_flds.ifa"
+file_lsf = "lsf_flds.ifa"
 
 #%%
 
@@ -95,16 +96,63 @@ def deriv_to_dataset(dataframe):
     return xdata
 
 
+def lsf_to_dataset(dataframe):
+    year, month, day, hour, *_ = dataframe.iloc[0].values
+    dataframe = dataframe.replace(-999, np.nan)
+    raw_data = dataframe.iloc[2:]
+    xdata = xr.Dataset(
+        {
+            "ht": (
+                ["pr"],
+                raw_data[1],
+                dict(long_name="Horizontal Advection of T", units="K/s"),
+            ),
+            "vt": (
+                ["pr"],
+                raw_data[2],
+                dict(long_name="Vertical  Advection of T", units="K/s"),
+            ),
+            "hq": (
+                ["pr"],
+                raw_data[3],
+                dict(
+                    long_name="Horizontal Advection of q",
+                    units="(g of vapor/g of air)/s",
+                ),
+            ),
+            "vq": (
+                ["pr"],
+                raw_data[4],
+                dict(
+                    long_name="Vertical  Advection of q",
+                    units="(g of vapor/g of air)/s",
+                ),
+            ),
+        },
+        coords={
+            "time": pd.to_datetime(
+                f"{year+1900:.0f}-{month:02.0f}-{day:02.0f} {hour}:00"
+            ),
+            # "nz": np.arange(raw_data[0].size),
+            "pr": (["pr"], raw_data[0], dict(long_name="Pressure", units="hPa")),
+        },
+    )
+    return xdata
+
+
 # %%
 basic_dfs = stacked_data(file_basic)
 deriv_dfs = stacked_data(file_deriv)
+lsf_dfs = stacked_data(file_lsf)
 
 xdata_basic = xr.concat([basic_to_dataset(x) for x in basic_dfs], dim="time")
 xdata_deriv = xr.concat([deriv_to_dataset(x) for x in basic_dfs], dim="time")
+xdata_lsf = xr.concat([lsf_to_dataset(x) for x in lsf_dfs], dim="time")
 # %%
 
 # Save the data
 xdata_basic.to_netcdf("basic_flds.nc")
 xdata_deriv.to_netcdf("deriv_flds.nc")
+xdata_lsf.to_netcdf("lsf_flds.nc")
 
 # %%
