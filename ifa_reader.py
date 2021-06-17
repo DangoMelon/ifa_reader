@@ -1,16 +1,8 @@
-#%%
 from typing import List
 
 import numpy as np
 import pandas as pd
 import xarray as xr
-
-file_basic = "ifa_data/basic_flds.ifa"
-file_deriv = "ifa_data/deriv_flds.ifa"
-file_lsf = "ifa_data/lsf_flds.ifa"
-file_misc = "ifa_data/misc_flds.ifa"
-
-#%%
 
 
 def stacked_data(file: str) -> List[pd.DataFrame]:
@@ -49,9 +41,6 @@ def regular_data(file: str) -> pd.DataFrame:
         axis=1,
     )
     return df[["time", 4, 5, 6, 7, 8, 9]]
-
-
-# %%
 
 
 def basic_to_dataset(dataframe: pd.DataFrame) -> xr.Dataset:
@@ -211,22 +200,26 @@ def misc_to_dataset(dataframe: pd.DataFrame) -> xr.Dataset:
     return xdata
 
 
-# %%
-basic_dfs = stacked_data(file_basic)
-deriv_dfs = stacked_data(file_deriv)
-lsf_dfs = stacked_data(file_lsf)
-misc_dfs = regular_data(file_misc)
+if __name__ == "__main__":
+    file_basic = "ifa_data/basic_flds.ifa"
+    file_deriv = "ifa_data/deriv_flds.ifa"
+    file_lsf = "ifa_data/lsf_flds.ifa"
+    file_misc = "ifa_data/misc_flds.ifa"
 
-xdata_basic = xr.concat([basic_to_dataset(x) for x in basic_dfs], dim="time")
-xdata_deriv = xr.concat([deriv_to_dataset(x) for x in deriv_dfs], dim="time")
-xdata_lsf = xr.concat([lsf_to_dataset(x) for x in lsf_dfs], dim="time")
-xdata_misc = misc_to_dataset(misc_dfs)
-# %%
+    # Read ifa data into pandas dataframes
+    basic_dfs = stacked_data(file_basic)
+    deriv_dfs = stacked_data(file_deriv)
+    lsf_dfs = stacked_data(file_lsf)
+    misc_dfs = regular_data(file_misc)
 
-# Save the data
-xdata_basic.to_netcdf("nc_data/basic_flds.nc")
-xdata_deriv.to_netcdf("nc_data/deriv_flds.nc")
-xdata_lsf.to_netcdf("nc_data/lsf_flds.nc")
-xdata_misc.to_netcdf("nc_data/misc_flds.nc")
+    # Convert to xarray
+    xdata_basic = xr.concat([basic_to_dataset(x) for x in basic_dfs], dim="time")
+    xdata_deriv = xr.concat([deriv_to_dataset(x) for x in deriv_dfs], dim="time")
+    xdata_lsf = xr.concat([lsf_to_dataset(x) for x in lsf_dfs], dim="time")
+    xdata_misc = misc_to_dataset(misc_dfs)
 
-# %%
+    # Save the data
+    xdata_basic.to_netcdf("nc_data/basic_flds.nc")
+    xdata_deriv.to_netcdf("nc_data/deriv_flds.nc")
+    xdata_lsf.to_netcdf("nc_data/lsf_flds.nc")
+    xdata_misc.to_netcdf("nc_data/misc_flds.nc")
