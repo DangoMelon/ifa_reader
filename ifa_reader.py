@@ -75,7 +75,6 @@ def basic_to_dataset(dataframe: pd.DataFrame) -> xr.Dataset:
             "time": pd.to_datetime(
                 f"{year+1900:.0f}-{month:02.0f}-{day:02.0f} {hour}:00"
             ),
-            # "nz": np.arange(raw_data[0].size),
             "pr": (["pr"], raw_data[0], dict(long_name="Pressure", units="hPa")),
         },
     )
@@ -152,7 +151,6 @@ def lsf_to_dataset(dataframe: pd.DataFrame) -> xr.Dataset:
             "time": pd.to_datetime(
                 f"{year+1900:.0f}-{month:02.0f}-{day:02.0f} {hour}:00"
             ),
-            # "nz": np.arange(raw_data[0].size),
             "pr": (["pr"], raw_data[0], dict(long_name="Pressure", units="hPa")),
         },
     )
