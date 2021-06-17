@@ -29,6 +29,7 @@ dfs = [df[splits[i] : splits[i + 1]] for i in range(len(splits) - 1)]
 
 def to_dataarray(dataframe):
     year, month, day, hour, *_ = dataframe.iloc[0].T.values
+    dataframe = dataframe.replace(-999, np.nan)
     raw_data = dataframe.iloc[1:]
     xdata = xr.Dataset(
         {
