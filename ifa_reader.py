@@ -33,7 +33,6 @@ def to_dataarray(dataframe):
     raw_data = dataframe.iloc[1:]
     xdata = xr.Dataset(
         {
-            "pr": (["nz"], raw_data[0], dict(long_name="Pressure", units="hPa")),
             "z": (["nz"], raw_data[1], dict(long_name="Height")),
             "t": (["nz"], raw_data[2]),
             "q": (
@@ -50,6 +49,7 @@ def to_dataarray(dataframe):
                 f"{year+1900:.0f}-{month:02.0f}-{day:02.0f} {hour}:00"
             ),
             "nz": np.arange(raw_data[0].size),
+            "pr": (["nz"], raw_data[0], dict(long_name="Pressure", units="hPa")),
         },
     )
     return xdata
