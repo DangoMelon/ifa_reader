@@ -19,7 +19,6 @@ df = pd.read_csv(
     index_col=False,
     names=np.arange(ncols),
 )
-print(df)
 
 # %%
 splits = [ix for ix in df[df.isnull().any(axis=1)].index] + [len(df)]
