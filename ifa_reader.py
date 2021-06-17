@@ -34,7 +34,7 @@ def to_dataarray(dataframe):
     xdata = xr.Dataset(
         {
             "z": (["nz"], raw_data[1], dict(long_name="Height")),
-            "t": (["nz"], raw_data[2]),
+            "t": (["nz"], raw_data[2], dict(long_name="Temperature")),
             "q": (
                 ["nz"],
                 raw_data[3],
